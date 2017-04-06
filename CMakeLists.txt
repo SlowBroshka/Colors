@@ -1,0 +1,6 @@
+cmake_minimum_required(VERSION 3.6)
+project( Colors )
+find_package( OpenCV REQUIRED )
+include_directories( ${OpenCV_INCLUDE_DIRS} )
+add_executable( Colors main.cpp HelpFunctions.cpp Constants.h HelpFunctions.h)
+target_link_libraries( Colors ${OpenCV_LIBS} )
