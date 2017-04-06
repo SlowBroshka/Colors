@@ -14,6 +14,7 @@
 #include <iostream>
 #include <vector>
 #include <algorithm>
+#include <iterator>
 #include <cv.h>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/opencv.hpp>
@@ -32,7 +33,9 @@ bool colors_sort(std::pair<uint, Scalar> a, std::pair<uint, Scalar> b);
 
 vector<pair<uint, Scalar> > GetColors(Mat const &image, size_t n);
 
-vector <pair<uint, Scalar> > BlockThis(size_t BlockSize);
+vector <pair<uint, Scalar> > BuildRangeVector(vector<Scalar> Src);
+
+vector <pair<uint, Scalar> > BlockThis(vector <pair <uint, Scalar> > Src, size_t BlockSize);
 
 
 #endif //COLORS_HELPFUNCTIONS_H

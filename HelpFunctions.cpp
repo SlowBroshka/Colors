@@ -105,7 +105,62 @@ vector<pair<uint, Scalar> > GetColors(Mat const &image, size_t n){
     return rgb_colors;
 }
 
-vector <pair<uint, Scalar> > BlockThis(size_t BlockSize){
+vector <pair<uint, Scalar> > BuildRangeVector(vector<Scalar> Src){
 
+    vector <pair<uint, Scalar> > FinalVector;
+    pair<uint, Scalar> temp;
+    temp.first = 1;
+    temp.second = Src[0];
+    FinalVector.push_back(temp);
+
+    for (vector<Scalar>::iterator it = Src.begin()+1; it < Src.end(); it++){
+        if (FinalVector.back().second == (*it)){
+            FinalVector.back().first++;
+        }else{
+            temp.second = (*it);
+            temp.first = 1;
+            FinalVector.push_back(temp);
+        }
+    }
+    return FinalVector;
+
+    };
+
+vector <pair<uint, Scalar> > BlockThis(vector <pair <uint, Scalar> > Src, size_t BlockSize){
+
+    pair <uint, Scalar> Ltemp;
+    Ltemp.first = 0, Ltemp.second = Scalar(0,0,0);
+    pair <uint, Scalar> Rtemp;
+    Rtemp.first = 1, Rtemp.second = Scalar(0,0,0);
+
+    for (size_t i = 1; i <= BlockSize; i++){
+
+        Ltemp.first = 0, Ltemp.second = Scalar(0,0,0);
+        Rtemp.first = 0, Rtemp.second = Scalar(0,0,0);
+
+        for (vector <pair <uint, Scalar> >::iterator it = Src.begin(); it < Src.end()-1; it++){     //vozmogno +i
+
+            if ((*it).second != (*(it+1)).second){
+                while (((*it).second == (*(it + Rtemp.first)).second) && ((it + Rtemp.first) < Src.end()) ){
+                    Rtemp.first++;
+                }
+            }else{
+                Ltemp.first++;
+                Ltemp.second = (*it).second;
+            }
+
+            if (Ltemp.first > Rtemp.first){
+                for (size_t k = 0; k < i; k++){
+                    (*(it + k)).second = Ltemp.second;
+                }
+            }else{
+                for (size_t k = 0; k < i; k++){
+                    (*(it + k)).second = Rtemp.second;
+                }
+            }
+
+        }
+
+    }
 
 };
