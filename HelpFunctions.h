@@ -30,7 +30,9 @@ int GetPixelColorType(int H, int S, int V);
 
 bool colors_sort(std::pair<uint, Scalar> a, std::pair<uint, Scalar> b);
 
-std::vector<pair<uint, Scalar> > GetColors(Mat const &image, size_t n);
+vector<pair<uint, Scalar> > GetColors(Mat const &image, size_t n);
+
+vector <pair<uint, Scalar> > BlockThis(size_t BlockSize);
 
 
 #endif //COLORS_HELPFUNCTIONS_H

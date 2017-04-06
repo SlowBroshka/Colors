@@ -41,7 +41,7 @@ bool colors_sort(std::pair<uint, Scalar> a, std::pair<uint, Scalar> b){
     return (a.first > b.first);
 }
 
-std::vector<pair<uint, Scalar> > GetColors(Mat const &image, size_t n){
+vector<pair<uint, Scalar> > GetColors(Mat const &image, size_t n){
     size_t N = n;
     if (n > 10 || n == 0){
         N = 10;
@@ -103,5 +103,9 @@ std::vector<pair<uint, Scalar> > GetColors(Mat const &image, size_t n){
     sort(rgb_colors.begin(), rgb_colors.end(), colors_sort);
 
     return rgb_colors;
-
 }
+
+vector <pair<uint, Scalar> > BlockThis(size_t BlockSize){
+
+
+};
