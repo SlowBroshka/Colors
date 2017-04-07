@@ -105,6 +105,90 @@ vector<pair<uint, Scalar> > GetColors(Mat const &image, size_t n){
     return rgb_colors;
 }
 
+Scalar BGR2LAB(Scalar &rgb){
+    Scalar XYZ;
+    rgb.val[0] = rgb.val[0] / 255;
+    rgb.val[0] = rgb.val[0] / 255;
+    rgb.val[0] = rgb.val[0] / 255;
+
+    XYZ.val[0] = rgb.val[2] * 0.4124 + rgb.val[1] * 0.3576 + rgb.val[0] * 0.1805;
+    XYZ.val[1] = rgb.val[2] * 0.2126 + rgb.val[1] * 0.7152 + rgb.val[0] * 0.0722;
+    XYZ.val[2] = rgb.val[2] * 0.0193 + rgb.val[1] * 0.1192 + rgb.val[0] * 0.9505;
+
+    return XYZ;
+}
+
+double XYZdistance(Scalar c_1, Scalar c_2){
+    Scalar c1 = BGR2LAB(c_1);
+    Scalar c2 = BGR2LAB(c_2);
+    return sqrt(pow(c1.val[0] - c2.val[0], 2) + pow(c1.val[1] - c2.val[1], 2) + pow(c1.val[2] - c2.val[2], 2));
+}
+
+vector <pair <uint, Scalar> > BlockThis(vector <pair<uint, Scalar> > Src, unsigned int BlockSize){
+    vector<pair <uint, Scalar> > Dst(Src);
+    uint MinBlockSize = Dst.back().first;
+    cout<<"MinBlockSize= "<<MinBlockSize<<endl;
+    size_t i;
+
+    for (i = 0; i < Dst.size(); i++){
+        if (MinBlockSize > Dst[i].first){
+            MinBlockSize = Dst[i].first;
+        }
+    }
+
+    while (MinBlockSize < BlockSize) {
+        for (i = 0 + 1; i < Dst.size() - 1; i++) {
+            uint NowSize = Dst[i].first;
+            if (NowSize < BlockSize) {
+                double RColorDistance = XYZdistance(Dst[i].second, Dst[i + 1].second);
+                double LColorDistance = XYZdistance(Dst[i].second, Dst[i + 1].second);
+                if (LColorDistance != RColorDistance) {
+                    if (LColorDistance < RColorDistance) {
+                        i--;
+                    }
+                    Dst[i].second.val[0] = (Dst[i].first * Dst[i].second.val[0] + Dst[i + 1].first * Dst[i + 1].second.val[0]) /
+                            (Dst[i + 1].first + Dst[i].first);
+                    Dst[i].second.val[1] = (Dst[i].first * Dst[i].second.val[1] + Dst[i + 1].first * Dst[i + 1].second.val[1]) /
+                            (Dst[i + 1].first + Dst[i].first);
+                    Dst[i].second.val[2] = (Dst[i].first * Dst[i].second.val[2] + Dst[i + 1].first * Dst[i + 1].second.val[2]) /
+                            (Dst[i + 1].first + Dst[i].first);
+
+                    Dst[i].first += Dst[i + 1].first;
+
+                    Dst.erase(Dst.begin() + i + 1);
+                } else {
+                    i--;
+                    Dst[i].first = Dst[i].first + Dst[i + 1].first + Dst[i + 2].first;
+                    Dst[i].second.val[0] =
+                            (Dst[i].first * Dst[i].second.val[0] + Dst[i + 1].first * Dst[i + 1].second.val[0] +
+                             Dst[i + 2].first * Dst[i + 2].second.val[0]) /
+                                    (Dst[i + 2].first + Dst[i + 1].first + Dst[i].first);
+                    Dst[i].second.val[1] =
+                            (Dst[i].first * Dst[i].second.val[1] + Dst[i + 1].first * Dst[i + 1].second.val[1] +
+                             Dst[i + 2].first * Dst[i + 2].second.val[1]) /
+                                    (Dst[i + 2].first + Dst[i + 1].first + Dst[i].first);
+                    Dst[i].second.val[2] =
+                            (Dst[i].first * Dst[i].second.val[2] + Dst[i + 1].first * Dst[i + 1].second.val[2] +
+                             Dst[i + 2].first * Dst[i + 2].second.val[2]) /
+                                    (Dst[i + 2].first + Dst[i + 1].first + Dst[i].first);
+                    Dst.erase(Dst.begin() + i + 1);
+                    Dst.erase(Dst.begin() + i + 2);
+                }
+            i++;
+            }
+        }
+        MinBlockSize = Dst.front().first;
+        for (i = 0; i < Dst.size() - 1; i++){
+            if (MinBlockSize > Dst[i].first){
+                MinBlockSize = Dst[i].first;
+            }
+        }
+        cout<<MinBlockSize<<endl;
+    }
+    return Dst;
+
+}
+
 vector <pair<uint, Scalar> > BuildRangeVector(vector<Scalar> Src){
 
     vector <pair<uint, Scalar> > FinalVector;
@@ -122,11 +206,11 @@ vector <pair<uint, Scalar> > BuildRangeVector(vector<Scalar> Src){
             FinalVector.push_back(temp);
         }
     }
+
     return FinalVector;
+};
 
-    };
-
-vector <pair<uint, Scalar> > BlockThis(vector <pair <uint, Scalar> > Src, size_t BlockSize){
+vector <pair<uint, Scalar> > BlockThis11(vector <pair <uint, Scalar> > Src, size_t BlockSize){
 
     pair <uint, Scalar> Ltemp;
     Ltemp.first = 0, Ltemp.second = Scalar(0,0,0);

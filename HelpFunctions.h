@@ -1,8 +1,6 @@
 //
 // Created by slowbro on 03.04.17.
 //
-
-
 #ifndef COLORS_HELPFUNCTIONS_H
 #define COLORS_HELPFUNCTIONS_H
 
@@ -35,7 +33,13 @@ vector<pair<uint, Scalar> > GetColors(Mat const &image, size_t n);
 
 vector <pair<uint, Scalar> > BuildRangeVector(vector<Scalar> Src);
 
-vector <pair<uint, Scalar> > BlockThis(vector <pair <uint, Scalar> > Src, size_t BlockSize);
+vector <pair<uint, Scalar> > BlockThis(vector<pair <uint, Scalar> > Src, unsigned int BlockSize);
+
+Scalar BGR2LAB(Scalar &rgb);
+
+double XYZdistance(Scalar _c1, Scalar _c2);
+
+vector <pair <uint, Scalar> > BlockThis11(vector <pair<uint, Scalar> > Src, uint BlockSize);
 
 
 #endif //COLORS_HELPFUNCTIONS_H
