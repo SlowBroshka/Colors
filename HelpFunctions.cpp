@@ -7,6 +7,8 @@
 using namespace std;
 using namespace cv;
 
+
+
 int GetPixelColorType(int H, int S, int V){
     int color = cBLACK;
 
@@ -124,10 +126,12 @@ double XYZdistance(Scalar c_1, Scalar c_2){
     return sqrt(pow(c1.val[0] - c2.val[0], 2) + pow(c1.val[1] - c2.val[1], 2) + pow(c1.val[2] - c2.val[2], 2));
 }
 
+
+
 vector <pair <uint, Scalar> > BlockThis(vector <pair<uint, Scalar> > Src, unsigned int BlockSize){
     vector<pair <uint, Scalar> > Dst(Src);
     uint MinBlockSize = Dst.back().first;
-    cout<<"MinBlockSize= "<<MinBlockSize<<endl;
+    //cout<<"MinBlockSize= "<<MinBlockSize<<endl;
     size_t i;
 
     for (i = 0; i < Dst.size(); i++){
@@ -140,8 +144,10 @@ vector <pair <uint, Scalar> > BlockThis(vector <pair<uint, Scalar> > Src, unsign
         for (i = 0 + 1; i < Dst.size() - 1; i++) {
             uint NowSize = Dst[i].first;
             if (NowSize < BlockSize) {
+
                 double RColorDistance = XYZdistance(Dst[i].second, Dst[i + 1].second);
                 double LColorDistance = XYZdistance(Dst[i].second, Dst[i + 1].second);
+
                 if (LColorDistance != RColorDistance) {
                     if (LColorDistance < RColorDistance) {
                         i--;
@@ -183,13 +189,75 @@ vector <pair <uint, Scalar> > BlockThis(vector <pair<uint, Scalar> > Src, unsign
                 MinBlockSize = Dst[i].first;
             }
         }
-        cout<<MinBlockSize<<endl;
+        //cout<<MinBlockSize<<endl;
     }
+    //cout<<MinBlockSize<<endl;
     return Dst;
 
 }
 
-vector <pair<uint, Scalar> > BuildRangeVector(vector<Scalar> Src){
+
+vector <pair<uint, Scalar> > GetMaxFreqColors(vector<pair<uint, Scalar> > & Src, unsigned int Nums){
+
+    vector <pair<uint, Scalar> > BufSrc(Src);
+    vector <pair<uint, Scalar> > FinalVector;
+    FinalVector.reserve(Nums);
+
+    sort(BufSrc.begin(), BufSrc.end(), colors_sort);
+    for (size_t i = 0; i < Nums; i++){
+        if (Src[i] == BufSrc[i]){
+            FinalVector.push_back(Src[i]);
+        }
+    }
+    return FinalVector;
+};
+vector <pair<uint, Scalar> > BuildRangeVector(vector<Scalar> Src, int dist, int DistNums, int PerDestroy){
+
+    vector <pair<uint, Scalar> > FinalVector;
+    pair<uint, Scalar> temp;
+
+
+    for (size_t i = 0; i < Src.size(); i++){
+        temp.first = 1;
+        temp.second = Src[i];
+        FinalVector.push_back(temp);
+    }
+    uint MinBlockDist  = uint((Src.size() * PerDestroy) / 1000);
+    if (dist == 1 || DistNums == 0){
+        return  FinalVector;
+    }
+    for (int idist = 1; idist < DistNums; idist++){
+        for (int i = 0; i < FinalVector.size() - 1; i++){
+            if (XYZdistance(FinalVector[i].second, FinalVector[i+1].second) <= (idist * dist)){
+
+                FinalVector[i].second.val[0] = (FinalVector[i].first * FinalVector[i].second.val[0] +
+                        FinalVector[i + 1].first * FinalVector[i + 1].second.val[0]) / (FinalVector[i].first + FinalVector[i + 1].first);
+                FinalVector[i].second.val[1] = (FinalVector[i].first * FinalVector[i].second.val[1] +
+                        FinalVector[i + 1].first * FinalVector[i + 1].second.val[1]) / (FinalVector[i].first + FinalVector[i + 1].first);
+                FinalVector[i].second.val[2] = (FinalVector[i].first * FinalVector[i].second.val[2] +
+                        FinalVector[i + 1].first * FinalVector[i + 1].second.val[2]) / (FinalVector[i].first + FinalVector[i + 1].first);
+                FinalVector[i].first += FinalVector[i + 1].first;
+                FinalVector.erase(FinalVector.begin() + i + 1);
+
+            }/*else{
+                if (FinalVector[i+1].first <= MinBlockDist){
+                    FinalVector[i].first += FinalVector[i + 1].first;
+                    FinalVector.erase(FinalVector.begin() + i + 1);
+                }
+            }*/
+        }
+    }
+    for (int i = 0; i < FinalVector.size() - 1; i++) {
+        if (FinalVector[i + 1].first <= MinBlockDist && XYZdistance(FinalVector[i].second, FinalVector[i+1].second) >= (DistNums * dist)) {
+            FinalVector[i].first += FinalVector[i + 1].first;
+            FinalVector.erase(FinalVector.begin() + i + 1);
+        }
+    }
+    return FinalVector;
+
+};
+
+vector <pair<uint, Scalar> > BuildRangeVectorV0(vector<Scalar> Src, int dist){
 
     vector <pair<uint, Scalar> > FinalVector;
     pair<uint, Scalar> temp;
@@ -197,10 +265,16 @@ vector <pair<uint, Scalar> > BuildRangeVector(vector<Scalar> Src){
     temp.second = Src[0];
     FinalVector.push_back(temp);
 
-    for (vector<Scalar>::iterator it = Src.begin()+1; it < Src.end(); it++){
-        if (FinalVector.back().second == (*it)){
+    for (vector<Scalar>::iterator it = Src.begin() + 1; it < Src.end(); it++) {
+        if (XYZdistance(FinalVector.back().second, (*it)) <= dist) {
+            FinalVector.back().second.val[0] = (FinalVector.back().first * FinalVector.back().second.val[0] +
+                                                (*it).val[0]) / (FinalVector.back().first + 1);
+            FinalVector.back().second.val[1] = (FinalVector.back().first * FinalVector.back().second.val[1] +
+                                                (*it).val[1]) / (FinalVector.back().first + 1);
+            FinalVector.back().second.val[2] = (FinalVector.back().first * FinalVector.back().second.val[2] +
+                                                (*it).val[2]) / (FinalVector.back().first + 1);
             FinalVector.back().first++;
-        }else{
+        } else {
             temp.second = (*it);
             temp.first = 1;
             FinalVector.push_back(temp);

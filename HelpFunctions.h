@@ -14,6 +14,7 @@
 #include <algorithm>
 #include <iterator>
 #include <cv.h>
+#include <highgui.h>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/opencv.hpp>
 #include <opencv2/core/types_c.h>
@@ -31,7 +32,9 @@ bool colors_sort(std::pair<uint, Scalar> a, std::pair<uint, Scalar> b);
 
 vector<pair<uint, Scalar> > GetColors(Mat const &image, size_t n);
 
-vector <pair<uint, Scalar> > BuildRangeVector(vector<Scalar> Src);
+vector <pair<uint, Scalar> > BuildRangeVector(vector<Scalar> Src, int dist, int DistNums, int PerDestroy);
+
+vector <pair<uint, Scalar> > GetMaxFreqColors(vector<pair<uint, Scalar> > & Src, unsigned int Nums);
 
 vector <pair<uint, Scalar> > BlockThis(vector<pair <uint, Scalar> > Src, unsigned int BlockSize);
 
@@ -41,7 +44,9 @@ double XYZdistance(Scalar _c1, Scalar _c2);
 
 vector <pair <uint, Scalar> > BlockThis11(vector <pair<uint, Scalar> > Src, uint BlockSize);
 
-
+//void DistanceTrackBar(int);
+//
+//void BlockTrackBar(int);
 #endif //COLORS_HELPFUNCTIONS_H
 
 

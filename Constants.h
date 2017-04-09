@@ -17,6 +17,10 @@ static const std::string FINWINDOWNAME = "Colors";
 static const std::string RecFile = "Rec";
 static const int RECT_COLORS_SIZE = 10;
 static const uint BlocksWeightIgnore = 10;    //[0, 100) % of ignore Blocks
+//static const uint DISTCONST = 5;
+
+
+
 
 enum {cBLACK = 0, cWHITE, cGREY, cRED, cORANGE, cYELLOW, cGREEN, cAQUA,  cBLUE, cPURPLE, NUM_COLOR_TYPE};
 
