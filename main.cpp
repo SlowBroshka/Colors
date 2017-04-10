@@ -13,10 +13,11 @@
 using namespace std;
 using namespace cv;
 
-int dif = 8;    //4
-int DistConst = 11;  //7
+int dif = 4;    //4 8
+int DistConst = 7;  //7    11
 int PercentDestroy = 5; //5
 int blocks = 1;
+int COLOR_NUMS = 10;
 
 void DistanceTrackBar(int d, void *){
     dif = d;
@@ -51,7 +52,7 @@ int main(int argc, char** argv){
 
 
     // char* filename = argv[1];
-    string filename = "/windows/Zagruzki/LastMan/E24 Encaisser et pas mourir.mkv";
+    string filename = "/windows/Denis/MVI_3300.MOV";
     string filename1 = "/home/slowbro/Pictures/Wallpapers/12.jpg";
     cout<<"[i] file: "<<filename<<endl;
 
@@ -90,131 +91,50 @@ int main(int argc, char** argv){
 
 //        imshow(FINWINDOWNAME, Fin);
         c++;
+        cout<<c<<" ";
         //if (srcframe.empty()) {
-        if (c == 2000){
+        if (c == 1000){
             cout<<c<<endl;
-            namedWindow("Stock", CV_WINDOW_AUTOSIZE);
-            moveWindow("Stok", 100, 0);
-
 
             Mat StockImage(Size(c, 200), srcframe.type());
             for (int i = 0; i < MaxFreqColors.size(); i++){
                 rectangle(StockImage, cvPoint(i, 0), cvPoint(i + 1, 200), MaxFreqColors[i], -1);
             }
+
             imwrite("/home/slowbro/Pictures/Stock.jpg", StockImage);
-            imshow("Stock", StockImage);
 
-            namedWindow("distance", CV_WINDOW_AUTOSIZE);
-            moveWindow("distance", 100, 400);
-            createTrackbar("dist", "distance", &dif, 20, DistanceTrackBar);
-            createTrackbar("nums", "distance", &DistConst,300, DistanceConstkTrackBar);
-            createTrackbar("Destroy", "distance", &PercentDestroy, 100, PercentDestroyTrackBar);
-
-            namedWindow("distance + blocks", CV_WINDOW_AUTOSIZE);
-            moveWindow("distance + blocks", 100, 600);
-            createTrackbar("block", "distance + blocks", &blocks, 500, BlockTrackBar);
-
-
-            while(1){
-
-                DistanceTrackBar(dif, NULL);
-                DistanceConstkTrackBar(DistConst, NULL);
-                PercentDestroyTrackBar(PercentDestroy, NULL);
-                vector<pair<uint, Scalar> > RecColors1 = BuildRangeVector(MaxFreqColors, dif, DistConst, PercentDestroy);
-
-
-                uint MaxWidth = 0;
-                for (int i = 0; i < RecColors1.size(); i++){
-                    MaxWidth += RecColors1[i].first;
-                }
-                Mat DistanceImage(Size(MaxWidth, 200), srcframe.type());
-                int NowX = 0;
-                for (int i = 0; i < RecColors1.size(); i++){
-                    rectangle(DistanceImage, cvPoint(NowX, 0), cvPoint(NowX + RecColors1[i].first, 200), RecColors1[i].second, -1);
-                    NowX += RecColors1[i].first;
-                }
-
-
-                imshow("distance", DistanceImage);
-
-                BlockTrackBar(blocks, NULL);
-                vector<pair<uint, Scalar> > RecColors = BlockThis(RecColors1, blocks);
-
-                MaxWidth = 0;
-                for (int i = 0; i < RecColors.size(); i++){
-                    MaxWidth += RecColors[i].first;
-                }
-                cout<<"MaxWidth: "<<MaxWidth<<endl;
-                Mat BlockImage(Size(MaxWidth, 200), srcframe.type());
-
-                NowX = 0;
-                for (int i = 0; i < RecColors.size(); i++){
-                    rectangle(BlockImage, cvPoint(NowX, 0), cvPoint(NowX + RecColors[i].first, 200), RecColors[i].second, -1);
-                    NowX += RecColors1[i].first;
-                }
-
-
-               // BlockTrackBar(blocks, NULL);
-                imshow("distance + blocks", BlockImage);
-
-
-                char c = waitKey(33);
-                if (c == 27) {
-                    imwrite("/home/slowbro/Pictures/dist.jpg", DistanceImage);
-                    imwrite("/home/slowbro/Pictures/block.jpg", BlockImage);
-                    break;
-                }
+            vector<pair<uint, Scalar> > RecColors1 = BuildRangeVector(MaxFreqColors, dif, DistConst, PercentDestroy);
+            uint MaxWidth = 0;
+            for (int i = 0; i < RecColors1.size(); i++){
+                MaxWidth += RecColors1[i].first;
             }
+            Mat DistanceImage(Size(MaxWidth, 200), srcframe.type());
+            int NowX = 0;
+            for (int i = 0; i < RecColors1.size(); i++){
+                rectangle(DistanceImage, cvPoint(NowX, 0), cvPoint(NowX + RecColors1[i].first, 200), RecColors1[i].second, -1);
+                NowX += RecColors1[i].first;
+            }
+            imwrite("/home/slowbro/Pictures/dist.jpg", DistanceImage);
 
-//            vector<pair<uint, Scalar> > RecColors1 = BuildRangeVector(MaxFreqColors);
-//            vector<pair<uint, Scalar> > RecColors = BlockThis(RecColors1, 40);
-//            uint MaxWidth = 0;
-//            for (int i = 0; i < RecColors.size(); i++){
-//                MaxWidth += RecColors[i].first;
-//            }
-//            cout<<MaxWidth<<endl;
-//            int NowX = 0;
-//            Mat ColorPic(Size(MaxWidth, 600), srcframe.type());
-//            for (int i = 0; i < RecColors.size(); i++){
-//                cout<<i<<"- "<<RecColors[i].first<<endl;
-//                rectangle(ColorPic, cvPoint(NowX, 0), cvPoint(NowX + RecColors[i].first, 600), RecColors[i].second, -1);
-//                NowX += RecColors[i].first;
-//            }
-//            imwrite("/home/slowbro/Pictures/Wallpapers/New3.jpg", ColorPic);
+            vector<pair<uint, Scalar> > FinalColors = GetMaxFreqColors(RecColors1, COLOR_NUMS);
 
+            MaxWidth = 0;
+            for (int i = 0; i < FinalColors.size(); i++){
+                cout<<FinalColors[i].first<<" ";
+                MaxWidth += FinalColors[i].first;
+            }
+            int Delta = (MaxWidth / COLOR_NUMS) / 4;
+            Mat FinalImage(Size(MaxWidth + Delta * (COLOR_NUMS + 1), 600), srcframe.type(), Scalar(255, 255, 255));
 
-
-//            Mat ColorPic(Size(MaxFreqColors.size(), 600), srcframe.type());
-//            for (int i = 0; i < MaxFreqColors.size(); i++){
-//                rectangle(ColorPic, cvPoint(i, 0), cvPoint(1+i, 600), MaxFreqColors[i]);
-//            }
-//            imwrite("/home/slowbro/Pictures/Wallpapers/SuperFinStock.png", ColorPic);
-//            Mat ResizeColorPicck;
-//            resize(ColorPic, ResizeColorPicck, Size(800, 600), 0, 0, INTER_CUBIC);
-//            imwrite("/home/slowbro/Pictures/Wallpapers/SuperFinResize.png", ResizeColorPicck);
-//            blur(ColorPic, ColorPic, Size(MaxFreqColors.size() / 50, 10));
-//            imwrite("/home/slowbro/Pictures/Wallpapers/SuperFinBlur.png", ColorPic);
-//            blur(ResizeColorPicck, ResizeColorPicck, Size(30, 10));
-//            imwrite("/home/slowbro/Pictures/Wallpapers/SuperFinResizeBlur.png", ResizeColorPicck);
+            NowX = 0;
+            for (int i = 0; i < FinalColors.size(); i++){
+                rectangle(FinalImage, cvPoint(Delta + NowX, 200), cvPoint(Delta + NowX + FinalColors[i].first, 400), FinalColors[i].second, -1);
+                NowX += FinalColors[i].first + Delta;
+            }
+            imwrite("/home/slowbro/Pictures/Final.jpg", FinalImage);
             break;
         }
     }
-    //}
-//    Mat ColorPic(Size(MaxFreqColors.size(), 101), srcframe.type());
-//
-//    for (int i = 0; i < MaxFreqColors.size(); i++){
-//        rectangle(ColorPic, cvPoint(i, 0), cvPoint(1+i, 100), MaxFreqColors[i], -1);
-//    }
-//    imwrite("/home/slowbro/Pictures/Wallpapers/Fin.jpg", MaxFreqColors);
-//
-//    blur(MaxFreqColors, MaxFreqColors, Size(5, 5));
-//
-//    imwrite("/home/slowbro/Pictures/Wallpapers/FinBlur.jpg", MaxFreqColors);
-//
-
-    //cvReleaseCapture(&capture);
-    //cvDestroyAllWindows();
-    //destroyAllWindows();
 
 
     return 0;
