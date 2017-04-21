@@ -34,7 +34,9 @@ vector<pair<uint, Scalar> > GetColors(Mat const &image, size_t n);
 
 vector <pair<uint, Scalar> > BuildRangeVector(vector<Scalar> Src, int dist, int DistNums, int PerDestroy);
 
-vector <pair<uint, Scalar> > GetMaxFreqColors(vector<pair<uint, Scalar> > & Src, unsigned int Nums);
+vector <pair<uint, Scalar> > UnitColors(vector<pair<uint, Scalar> > Src, int K);
+
+vector <pair<uint, Scalar> > GetMaxFreqColors(vector<pair<uint, Scalar> >  Src, unsigned int _Nums);
 
 vector <pair<uint, Scalar> > BlockThis(vector<pair <uint, Scalar> > Src, unsigned int BlockSize);
 

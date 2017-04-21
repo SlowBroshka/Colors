@@ -197,20 +197,50 @@ vector <pair <uint, Scalar> > BlockThis(vector <pair<uint, Scalar> > Src, unsign
 }
 
 
-vector <pair<uint, Scalar> > GetMaxFreqColors(vector<pair<uint, Scalar> > & Src, unsigned int Nums){
+vector <pair<uint, Scalar> > GetMaxFreqColors(vector<pair<uint, Scalar> >  Src, unsigned int _Nums){
 
     vector <pair<uint, Scalar> > BufSrc(Src);
     vector <pair<uint, Scalar> > FinalVector;
+    unsigned int Nums = _Nums;
+    if (Nums < 2) {
+        Nums = 2;
+    }
     FinalVector.reserve(Nums);
 
     sort(BufSrc.begin(), BufSrc.end(), colors_sort);
-    for (size_t i = 0; i < Nums; i++){
-        if (Src[i] == BufSrc[i]){
-            FinalVector.push_back(Src[i]);
+    for (size_t i = 0; i < Src.size(); i++){
+        for (size_t j = 0; j < (Nums < Src.size() ? Nums : Src.size()); j++) {
+            if (Src[i] == BufSrc[j]) {
+                FinalVector.push_back(Src[i]);
+            }
         }
     }
     return FinalVector;
 };
+
+
+vector <pair<uint, Scalar> > UnitColors(vector<pair<uint, Scalar> > Src, int K){
+    vector <pair<uint, Scalar> > FinalVector(Src);
+    uint ColorSum;
+    for (int i = 0; i < FinalVector.size() - 1; i++){
+        if (XYZdistance(FinalVector[i].second, FinalVector[i + 1].second) < K){
+
+            ColorSum = FinalVector[i].first + FinalVector[i + 1].first;
+
+            FinalVector[i].second.val[0] = (FinalVector[i].first * FinalVector[i].second.val[0] +
+                                            FinalVector[i + 1].first * FinalVector[i + 1].second.val[0]) / (ColorSum);
+            FinalVector[i].second.val[1] = (FinalVector[i].first * FinalVector[i].second.val[1] +
+                                            FinalVector[i + 1].first * FinalVector[i + 1].second.val[1]) / (ColorSum);
+            FinalVector[i].second.val[2] = (FinalVector[i].first * FinalVector[i].second.val[2] +
+                                            FinalVector[i + 1].first * FinalVector[i + 1].second.val[2]) / (ColorSum);
+            FinalVector[i].first += FinalVector[i + 1].first;
+            FinalVector.erase(FinalVector.begin() + i + 1);
+            i--;
+        }
+    }
+    return FinalVector;
+};
+
 vector <pair<uint, Scalar> > BuildRangeVector(vector<Scalar> Src, int dist, int DistNums, int PerDestroy){
 
     vector <pair<uint, Scalar> > FinalVector;
@@ -238,13 +268,8 @@ vector <pair<uint, Scalar> > BuildRangeVector(vector<Scalar> Src, int dist, int 
                         FinalVector[i + 1].first * FinalVector[i + 1].second.val[2]) / (FinalVector[i].first + FinalVector[i + 1].first);
                 FinalVector[i].first += FinalVector[i + 1].first;
                 FinalVector.erase(FinalVector.begin() + i + 1);
-
-            }/*else{
-                if (FinalVector[i+1].first <= MinBlockDist){
-                    FinalVector[i].first += FinalVector[i + 1].first;
-                    FinalVector.erase(FinalVector.begin() + i + 1);
-                }
-            }*/
+                //i--;
+            }
         }
     }
     for (int i = 0; i < FinalVector.size() - 1; i++) {

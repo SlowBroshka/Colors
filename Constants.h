@@ -18,8 +18,8 @@ static const std::string RecFile = "Rec";
 static const int RECT_COLORS_SIZE = 10;
 static const uint BlocksWeightIgnore = 10;    //[0, 100) % of ignore Blocks
 //static const uint DISTCONST = 5;
-
-
+static const size_t HEIGHT = 150;
+static const size_t WIDTH = 800;
 
 
 enum {cBLACK = 0, cWHITE, cGREY, cRED, cORANGE, cYELLOW, cGREEN, cAQUA,  cBLUE, cPURPLE, NUM_COLOR_TYPE};
@@ -28,7 +28,5 @@ static const std::string sCtypes[NUM_COLOR_TYPE] = {"Black", "White", "Grey", "R
 static const uchar cCH[NUM_COLOR_TYPE] =     {  0,      0,        0,     0,       20,       30,     60,     85,     120,    140 };
 static const uchar cCS[NUM_COLOR_TYPE] =     {  0,      0,        0,     255,     255,      255,    255,    255,    255,    255};
 static const uchar cCV[NUM_COLOR_TYPE] =     {  0,      255,      120,   255,     255,      255,    255,    255,    255,    255};
-
-
 
 #endif //COLORS_CONSTANTS_H
