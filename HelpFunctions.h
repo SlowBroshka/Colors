@@ -1,8 +1,6 @@
 //
 // Created by slowbro on 03.04.17.
 //
-
-
 #ifndef COLORS_HELPFUNCTIONS_H
 #define COLORS_HELPFUNCTIONS_H
 
@@ -14,6 +12,7 @@
 #include <iostream>
 #include <vector>
 #include <algorithm>
+#include <iterator>
 #include <cv.h>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/opencv.hpp>
@@ -30,7 +29,17 @@ int GetPixelColorType(int H, int S, int V);
 
 bool colors_sort(std::pair<uint, Scalar> a, std::pair<uint, Scalar> b);
 
-std::vector<pair<uint, Scalar> > GetColors(Mat const &image, size_t n);
+vector<pair<uint, Scalar> > GetColors(Mat const &image, size_t n);
+
+vector <pair<uint, Scalar> > BuildRangeVector(vector<Scalar> Src);
+
+vector <pair<uint, Scalar> > BlockThis(vector<pair <uint, Scalar> > Src, unsigned int BlockSize);
+
+Scalar BGR2LAB(Scalar &rgb);
+
+double XYZdistance(Scalar _c1, Scalar _c2);
+
+vector <pair <uint, Scalar> > BlockThis11(vector <pair<uint, Scalar> > Src, uint BlockSize);
 
 
 #endif //COLORS_HELPFUNCTIONS_H

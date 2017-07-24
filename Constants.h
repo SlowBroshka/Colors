@@ -16,6 +16,7 @@ static const size_t MyScreanX = 300;
 static const std::string FINWINDOWNAME = "Colors";
 static const std::string RecFile = "Rec";
 static const int RECT_COLORS_SIZE = 10;
+static const uint BlocksWeightIgnore = 10;    //[0, 100) % of ignore Blocks
 
 enum {cBLACK = 0, cWHITE, cGREY, cRED, cORANGE, cYELLOW, cGREEN, cAQUA,  cBLUE, cPURPLE, NUM_COLOR_TYPE};
 
